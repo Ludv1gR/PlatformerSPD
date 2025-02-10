@@ -69,6 +69,7 @@ public class EnemyGroundMovement : MonoBehaviour
         {   
             other.GetComponent<Rigidbody2D>().velocity = new Vector2(other.GetComponent<Rigidbody2D>().velocity.x, 0);
             other.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, playerBounce));
+            other.gameObject.GetComponent<PlayerMovement>().ExtraJump();
 
             GetComponent<Animator>().SetTrigger("Hit");
             GetComponent<BoxCollider2D>().enabled = false;

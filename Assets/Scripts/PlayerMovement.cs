@@ -13,23 +13,29 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform leftFoot, rightFoot;
     [SerializeField] private Transform spawnPosition;
     [SerializeField] private LayerMask whatIsGround;
-    [SerializeField] private AudioClip jumpSound, pickupSoundHealth, pickupSoundFruit;
+    [SerializeField] private AudioClip jumpSound, pickupSoundHealth, pickupSoundFruit, damageSound;
     [SerializeField] private GameObject pickupEffect, dustParticles;
 
     [SerializeField] private Slider healthSlider;
     [SerializeField] private TMP_Text fruitsCollectedText;
+
+    [SerializeField] private int doubleJump = 1;
     private float horizontalValue; // för att röra sig vänster/höger
     private bool isGrounded;
     private bool canMove;
     private float rayDistance = 0.15f;
+    private int jumpsRemaining;
     private int startingHealth = 5;
     private int currentHealth = 0;
+    private int respawns = 3;
     public int fruitsCollected = 0;
 
     private Rigidbody2D rb;
     private SpriteRenderer sr;
     private Animator anim;
     private AudioSource audioSource;
+
+    public PauseMenuController gameOverScreen;
 
     void Start()
     {
@@ -55,13 +61,20 @@ public class PlayerMovement : MonoBehaviour
             FlipSprite(false);
         }
 
-        if(Input.GetButtonDown("Jump"))
+        CheckIfGrounded();
+
+        if(Input.GetButtonDown("Jump") && jumpsRemaining > 0)
         {
             Jump();
+            jumpsRemaining--;
+        }
+        if (CheckIfGrounded()) {
+             jumpsRemaining = doubleJump;
         }
 
         anim.SetFloat("MoveSpeed", Mathf.Abs(rb.velocity.x));
         anim.SetFloat("VerticalSpeed", rb.velocity.y);
+        anim.SetBool("IsGrounded", CheckIfGrounded());
     }
 
     private void FixedUpdate()
@@ -116,11 +129,23 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump()
     {
-        if(CheckIfGrounded())
-        {
-            rb.AddForce(new Vector2(0, jumpForce));
-            audioSource.PlayOneShot(jumpSound, 0.3f);
+        if(!CheckIfGrounded()) {
+            anim.SetTrigger("DoubleJump");
+        }
+
+        rb.velocity = new Vector2(rb.velocity.x, 0);
+        rb.AddForce(new Vector2(0, jumpForce));
+        audioSource.pitch = Random.Range(0.8f, 1.2f);
+        audioSource.PlayOneShot(jumpSound, 0.3f);
+
+        if(CheckIfGrounded()){
             Instantiate(dustParticles, transform.position, dustParticles.transform.localRotation);
+        }
+    }
+
+    public void ExtraJump() {
+        if(jumpsRemaining == 0) {
+            jumpsRemaining++;
         }
     }
 
@@ -129,42 +154,41 @@ public class PlayerMovement : MonoBehaviour
         currentHealth -= damageAmount;
         UpdateHealthBar();
 
-        if(currentHealth <= 0)
-        {
-            // Repsawna eller förlora helt?
+        if(currentHealth <= 0) {
+            if(respawns <= 0) {
+                gameOverScreen.GameOver();
+            }
             Respawn();
         }
     }
 
-    public void TakeKnockback(float knockbackForce, float up)
-    {
+    public void TakeKnockback(float knockbackForce, float up) {
         canMove = false;
+        rb.velocity = Vector2.zero;
         rb.AddForce(new Vector2(knockbackForce, up));
         Invoke("CanMoveAgain", 0.25f);
+        audioSource.pitch = Random.Range(0.8f, 1.2f);
+        audioSource.PlayOneShot(damageSound, 0.5f);
     }
 
-    private void CanMoveAgain()
-    {
+    private void CanMoveAgain() {
         canMove = true;
     }
 
-    private void Respawn()
-    {   
+    private void Respawn() {   
         currentHealth = startingHealth;
         UpdateHealthBar();
         transform.position = spawnPosition.position;
         rb.velocity = Vector2.zero;
+        respawns--;
     }
 
-    private void UpdateHealthBar()
-    {
+    private void UpdateHealthBar() {
         healthSlider.value = currentHealth;
     }
 
-    private void RestoreHealth(GameObject healthFruit)
-    {
-        if(currentHealth >= startingHealth)
-        {
+    private void RestoreHealth(GameObject healthFruit) {
+        if(currentHealth >= startingHealth) {
             return;
         } else {
             currentHealth += healthFruit.GetComponent<HealthPickup>().healingAmount;
@@ -183,8 +207,7 @@ public class PlayerMovement : MonoBehaviour
         RaycastHit2D leftHit = Physics2D.Raycast(leftFoot.position, Vector2.down, rayDistance, whatIsGround);
         RaycastHit2D rightHit = Physics2D.Raycast(rightFoot.position, Vector2.down, rayDistance, whatIsGround);
 
-        if(leftHit.collider != null && leftHit.collider.CompareTag("Ground") || rightHit.collider != null && rightHit.collider.CompareTag("Ground"))
-        {
+        if(leftHit.collider != null && leftHit.collider.CompareTag("Ground") || rightHit.collider != null && rightHit.collider.CompareTag("Ground")) {
             return true;
         } else {
             return false;
