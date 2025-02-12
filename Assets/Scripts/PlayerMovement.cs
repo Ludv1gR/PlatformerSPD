@@ -50,11 +50,14 @@ public class PlayerMovement : MonoBehaviour
     public float lastOnWallLeftTime = 0f;
 
     // Jump
+    private bool _isJumpCut;
     private bool _isJumpFalling = false;
+    private float jumpInputBufferTime = 0.1f;
 
     // Wall Jump
     private float _wallJumpStartTime = 0f;
     private int _lastWallJumpDir;
+    private float wallJumpTime = 0.1f;
 
     // Dash
     private int _dashesLeft;
@@ -104,16 +107,55 @@ public class PlayerMovement : MonoBehaviour
         //____________________________________
 
         horizontalValue = Input.GetAxis("Horizontal");
-
-        //________CHECKS______
-        CheckHorizontalValue();
-        if(!isDashing && !isJumping) {
-            CheckIfGrounded();
-            FrontWallCheck();
-            BackWallCheck();
+        if(Input.GetButtonDown("Jump") && jumpsRemaining > 0) {
+            OnJumpInput();
+            OnJumpUpInput(); // kolla vad gör
         }
-        //____________________
 
+        //______________CHECKS____________
+        CheckHorizontalValue();
+        if(!isJumping) {
+            CheckIfGrounded();
+            RightWallCheck();
+            LeftWallCheck();
+            lastOnWallTime = Mathf.Max(lastOnWallLeftTime, lastOnWallRightTime); //checkPoints kommer att vända när spelaren vänder, därav båda checksen
+        }
+        if(isJumping && rb.velocity.y < 0) {
+            isJumping = false;
+
+            if(!isWallJumping) {
+                _isJumpFalling = true;
+            }
+        }
+        if(isWallJumping && Time.time - _wallJumpStartTime > wallJumpTime) {
+            isWallJumping = false;
+        }
+        if(lastOnGroundTime > 0 && !isJumping && !isWallJumping) {
+            _isJumpCut = false;
+
+            if(!isJumping) {
+                _isJumpFalling = false;
+            }
+        }
+        if(lastOnGroundTime > 0 && !isJumping && lastPressedJumpTime > 0) {
+            isJumping = true;
+			isWallJumping = false;
+			_isJumpCut = false;
+			_isJumpFalling = false;
+			Jump();
+        } else if (CanWallJump() && lastPressedJumpTime > 0)
+		{
+			isWallJumping = true;
+			isJumping = false;
+			_isJumpCut = false;
+			_isJumpFalling = false;
+			_wallJumpStartTime = Time.time;
+			_lastWallJumpDir = (lastOnWallRightTime > 0) ? -1 : 1;
+			
+			WallJump(_lastWallJumpDir);
+		}
+        //________________________________
+        /*
         if(Input.GetButtonDown("Jump") && jumpsRemaining > 0) {
             Jump();
             jumpsRemaining--;
@@ -126,7 +168,7 @@ public class PlayerMovement : MonoBehaviour
             Dash();
             _dashesLeft--;
         }
-
+        */
         //___________________GRAVITY___________________
         if(isSliding) { // ingen gravitation när wall slidar
             rb.gravityScale = 0f;
@@ -222,6 +264,13 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void WallJump(int dir) {
+        lastPressedJumpTime = 0;
+		lastOnGroundTime = 0;
+		lastOnWallRightTime = 0;
+		lastOnWallLeftTime = 0;
+    }
+
     private void Dash() {
         //mhm
     }
@@ -297,21 +346,40 @@ public class PlayerMovement : MonoBehaviour
         RaycastHit2D leftHit = Physics2D.Raycast(leftFoot.position, Vector2.down, rayDistance, whatIsGround);
         RaycastHit2D rightHit = Physics2D.Raycast(rightFoot.position, Vector2.down, rayDistance, whatIsGround);
 
-        if(leftHit.collider != null && leftHit.collider.CompareTag("Ground") || rightHit.collider != null && rightHit.collider.CompareTag("Ground")) {
+        if(leftHit.collider != null && leftHit.collider.CompareTag("Ground") || rightHit.collider != null && rightHit.collider.CompareTag("Ground") && !isJumping) {
+            lastOnGroundTime = coyoteTime;
             return true;
         } else {
             return false;
         }
     }
 
-    private void FrontWallCheck() {
-
+    private void RightWallCheck() {
+        if(((Physics2D.OverlapBox(_frontWallCheckPoint.position, _wallCheckSize, 0, whatIsGround) && isFacingRight) || (Physics2D.OverlapBox(_backWallCheckPoint.position, _wallCheckSize, 0, whatIsGround) && !isFacingRight)) && !isWallJumping) {
+            lastOnWallRightTime = coyoteTime;
+        }
     }
 
-    private void BackWallCheck() {
-        
+    private void LeftWallCheck() {
+        if(((Physics2D.OverlapBox(_frontWallCheckPoint.position, _wallCheckSize, 0, whatIsGround) && !isFacingRight) || (Physics2D.OverlapBox(_backWallCheckPoint.position, _wallCheckSize, 0, whatIsGround) && isFacingRight)) && !isWallJumping) {
+            lastOnWallLeftTime = coyoteTime;
+        }
+    }
+
+    private void OnJumpInput() {
+        lastPressedJumpTime = jumpInputBufferTime;
+    }
+
+    private void OnJumpUpInput() {
+        if ((isJumping && rb.velocity.y > 0) || (isWallJumping && rb.velocity.y > 0)) {
+			_isJumpCut = true;
+        }
+    }
+
+    private bool CanWallJump() {
+        return lastPressedJumpTime > 0 && lastOnWallTime > 0 && lastOnGroundTime <= 0 && (!isWallJumping || (lastOnWallRightTime > 0 && _lastWallJumpDir == 1) || (lastOnWallLeftTime > 0 && _lastWallJumpDir == -1));
     }
 }
 
 
-// https://github.com/DawnosaurDev/platformer-movement/tree/main (region COLLISION CHECKS)
+// https://github.com/DawnosaurDev/platformer-movement/tree/main (WALLJUMP SKRIVER RN)
