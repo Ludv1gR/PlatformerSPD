@@ -6,7 +6,7 @@ using UnityEngine;
 public class Trampoline : MonoBehaviour
 {
     
-    [SerializeField] private float jumpForce = 200f;
+    [SerializeField] private float jumpForce = 680f; // 4 rutor height
 
     [SerializeField] private AudioClip trampolineSound;
 

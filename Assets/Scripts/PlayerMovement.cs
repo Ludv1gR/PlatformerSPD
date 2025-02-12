@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-//using UnityEditor.ShortcutManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -9,7 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
 
     [SerializeField] private float moveSpeed = 1f;
-    [SerializeField] private float jumpForce = 300f;
+    [SerializeField] private float jumpForce = 380f; //1 ruta height lite drygt för 2 och inte 3 i dubbel
     [SerializeField] private Transform leftFoot, rightFoot;
     [SerializeField] private Transform spawnPosition;
     [SerializeField] private LayerMask whatIsGround;
@@ -18,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private Slider healthSlider;
     [SerializeField] private TMP_Text fruitsCollectedText;
+    [SerializeField] private TMP_Text respawnsText;
 
     [SerializeField] private int doubleJump = 1;
     private float horizontalValue; // för att röra sig vänster/höger
@@ -29,6 +27,50 @@ public class PlayerMovement : MonoBehaviour
     private int currentHealth = 0;
     private int respawns = 3;
     public int fruitsCollected = 0;
+
+
+    //------------[ nya för SpelDesign ]------------//
+    // Constants
+    [SerializeField] private float normGravityScale = -9.81f;
+    [SerializeField] private float maxFallSpeed = 50;
+    [SerializeField] private float jumpHangTimeThreshold = 0.1f;
+    [SerializeField] private float coyoteTime = 0.1f;
+
+    // States
+    public bool isFacingRight = true;
+    public bool isJumping = false;
+    public bool isWallJumping = false;
+    public bool isDashing = false;
+    public bool isSliding = false;
+
+    // Timers
+    public float lastOnGroundTime = 0f;
+    public float lastOnWallTime = 0f;
+    public float lastOnWallRightTime = 0f;
+    public float lastOnWallLeftTime = 0f;
+
+    // Jump
+    private bool _isJumpFalling = false;
+
+    // Wall Jump
+    private float _wallJumpStartTime = 0f;
+    private int _lastWallJumpDir;
+
+    // Dash
+    private int _dashesLeft;
+    private bool _dashRefilling;
+    private int _lastDashDir;
+    
+    // Input
+    public float lastPressedJumpTime;
+    public float lastPressedDashTime;
+
+    // Check
+    [SerializeField] private Transform _frontWallCheckPoint;
+    [SerializeField] private Transform _backWallCheckPoint;
+    [SerializeField] private Vector2 _wallCheckSize = new Vector2(0.5f, 1f);
+    //----------------[ END ]----------------//
+
 
     private Rigidbody2D rb;
     private SpriteRenderer sr;
@@ -42,6 +84,7 @@ public class PlayerMovement : MonoBehaviour
         canMove = true;
         currentHealth = startingHealth;
         fruitsCollectedText.text = "" + fruitsCollected;
+        respawnsText.text = "x " + respawns;
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
@@ -50,27 +93,50 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        //_______________TIMERS_______________
+        lastOnGroundTime -= Time.deltaTime;
+        lastOnWallTime -= Time.deltaTime;
+        lastOnWallRightTime -= Time.deltaTime;
+        lastOnWallLeftTime -= Time.deltaTime;
+
+        lastPressedJumpTime -= Time.deltaTime;
+        lastPressedDashTime -= Time.deltaTime;
+        //____________________________________
+
         horizontalValue = Input.GetAxis("Horizontal");
 
-        if (horizontalValue < 0)
-        {
-            FlipSprite(true);
+        //________CHECKS______
+        CheckHorizontalValue();
+        if(!isDashing && !isJumping) {
+            CheckIfGrounded();
+            FrontWallCheck();
+            BackWallCheck();
         }
-        if (horizontalValue > 0)
-        {
-            FlipSprite(false);
-        }
+        //____________________
 
-        CheckIfGrounded();
-
-        if(Input.GetButtonDown("Jump") && jumpsRemaining > 0)
-        {
+        if(Input.GetButtonDown("Jump") && jumpsRemaining > 0) {
             Jump();
             jumpsRemaining--;
         }
         if (CheckIfGrounded()) {
              jumpsRemaining = doubleJump;
         }
+
+        if(Input.GetKeyDown(KeyCode.X) && _dashesLeft > 0) {
+            Dash();
+            _dashesLeft--;
+        }
+
+        //___________________GRAVITY___________________
+        if(isSliding) { // ingen gravitation när wall slidar
+            rb.gravityScale = 0f;
+        } else if(rb.velocity.y < 0) { // ökad gravitation när man faller
+            rb.gravityScale = normGravityScale * 1.5f;
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, maxFallSpeed));
+        } else if((isJumping || isWallJumping || _isJumpFalling) && Mathf.Abs(rb.velocity.y) < jumpHangTimeThreshold) { // mindre gravitation vid toppen av ett hopp
+            rb.gravityScale = normGravityScale * 0.8f;
+        }
+        //______________________________________________
 
         anim.SetFloat("MoveSpeed", Mathf.Abs(rb.velocity.x));
         anim.SetFloat("VerticalSpeed", rb.velocity.y);
@@ -122,6 +188,19 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void CheckHorizontalValue() {
+        if (horizontalValue < 0)
+        {
+            FlipSprite(true);
+            isFacingRight = false;
+        }
+        if (horizontalValue > 0)
+        {
+            FlipSprite(false);
+            isFacingRight = true;
+        }
+    }
+
     private void FlipSprite(bool flip)
     {
         sr.flipX = flip;
@@ -141,6 +220,10 @@ public class PlayerMovement : MonoBehaviour
         if(CheckIfGrounded()){
             Instantiate(dustParticles, transform.position, dustParticles.transform.localRotation);
         }
+    }
+
+    private void Dash() {
+        //mhm
     }
 
     public void ExtraJump() {
@@ -181,6 +264,13 @@ public class PlayerMovement : MonoBehaviour
         transform.position = spawnPosition.position;
         rb.velocity = Vector2.zero;
         respawns--;
+        if(respawns > 0) {
+            respawnsText.fontSize = 50;
+            respawnsText.text = "x " + respawns;
+        } else {
+            respawnsText.fontSize = 36;
+            respawnsText.text = "Last";
+        }
     }
 
     private void UpdateHealthBar() {
@@ -213,4 +303,15 @@ public class PlayerMovement : MonoBehaviour
             return false;
         }
     }
+
+    private void FrontWallCheck() {
+
+    }
+
+    private void BackWallCheck() {
+        
+    }
 }
+
+
+// https://github.com/DawnosaurDev/platformer-movement/tree/main (region COLLISION CHECKS)
