@@ -5,8 +5,6 @@ using System.Collections;
 
 public class PlayerMovement : MonoBehaviour
 {
-
-    //[SerializeField] private float moveSpeed = 1f;
     [SerializeField] private float jumpForce = 8.2f; //1 ruta height lite drygt för 2 och inte 3 i dubbel
     [SerializeField] private Transform leftFoot, rightFoot;
     [SerializeField] private Transform spawnPosition;
@@ -18,12 +16,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private TMP_Text fruitsCollectedText;
     [SerializeField] private TMP_Text respawnsText;
 
-    //[SerializeField] private int doubleJump = 1;
-    //private float horizontalValue; // för att röra sig vänster/höger
-    //private bool isGrounded;
-    private bool canMove;
     private float rayDistance = 0.15f;
-    private int jumpsRemaining;
     private int startingHealth = 5;
     private int currentHealth = 0;
     private int respawns = 3;
@@ -83,7 +76,7 @@ public class PlayerMovement : MonoBehaviour
     private float dashSpeed = 14f;
     private float dashEndSpeed = 6f;
     private float dashEndTime = 0.05f; // kanske 0.15?
-    private float dashRefillTime = 0.5f;
+    private float dashRefillTime = 0.3f;
 
     // GravityMultipliers
     private float fastFallGravityMult = 1.4f;
@@ -126,7 +119,6 @@ public class PlayerMovement : MonoBehaviour
     #region START
     void Start()
     {
-        canMove = true;
         currentHealth = startingHealth;
         fruitsCollectedText.text = "" + fruitsCollected;
         respawnsText.text = "x " + respawns;
@@ -237,8 +229,10 @@ public class PlayerMovement : MonoBehaviour
         //______________SLIDE CHECKS____________
         if(CanSlide() && ((lastOnWallLeftTime > 0 && _moveInput.x < 0) || (lastOnWallRightTime > 0 && _moveInput.x > 0))) {
             isSliding = true;
+            anim.SetBool("IsSliding", true);
         } else {
             isSliding = false;
+            anim.SetBool("IsSliding", false);
         }
         //______________________________________
 
@@ -472,10 +466,8 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void TakeKnockback(float knockbackForce, float up) {
-        canMove = false;
         rb.velocity = Vector2.zero;
         rb.AddForce(new Vector2(knockbackForce, up));
-        Invoke("CanMoveAgain", 0.25f);
         audioSource.pitch = Random.Range(0.8f, 1.2f);
         audioSource.PlayOneShot(damageSound, 0.5f);
     }
@@ -551,10 +543,6 @@ public class PlayerMovement : MonoBehaviour
     #endregion
     
     #region CHECK METHODS
-    private void CanMoveAgain() {
-        canMove = true;
-    }
-
     private void CheckDirectionToFace(bool isMovingRight) {
         if(isMovingRight != isFacingRight) {
             Turn();
