@@ -193,7 +193,9 @@ public class PlayerMovement : MonoBehaviour
         if(lastOnGroundTime > 0 && !isJumping && !isWallJumping) {
             _isJumpCut = false;
             _isJumpFalling = false;
+            _extraJumpsLeft = extraJumpAmount;
         }
+
         if(!isDashing) {
             if(CanJump() && lastPressedJumpTime > 0) {
                 isJumping = true;
@@ -361,8 +363,16 @@ public class PlayerMovement : MonoBehaviour
             Instantiate(dustParticles, transform.position, dustParticles.transform.localRotation);
         }
 
+        if (lastOnGroundTime > 0) {
+            lastOnGroundTime = 0; // Reset ground time on normal jump
+            _extraJumpsLeft = extraJumpAmount;
+        } else {
+            _extraJumpsLeft--; // Consume an extra jump
+            if(_extraJumpsLeft < extraJumpAmount) {
+                anim.SetTrigger("DoubleJump");
+            }
+        }
         lastPressedJumpTime = 0;
-        lastOnGroundTime = 0;
     }
 
     private void WallJump(int dir) {
@@ -384,9 +394,21 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void AddExtraJump() {
-        if(jumpsRemaining == 0) {
-            jumpsRemaining++;
+        if(_extraJumpsLeft == 0) {
+            _extraJumpsLeft++;
         }
+    }
+
+    public void JumpCooldown() {
+        if(!isJumping) {
+            StartCoroutine(JumpCooldownCoroutine());
+        }
+    }
+
+    private IEnumerator JumpCooldownCoroutine() {
+        isJumping = true;
+        yield return new WaitForSeconds(0.35f);
+        isJumping = false;
     }
     #endregion
 
@@ -546,6 +568,7 @@ public class PlayerMovement : MonoBehaviour
 
         if(leftHit.collider != null && leftHit.collider.CompareTag("Ground") || rightHit.collider != null && rightHit.collider.CompareTag("Ground") && !isJumping) {
             lastOnGroundTime = coyoteTime;
+            _extraJumpsLeft = extraJumpAmount;
             return true;
         } else {
             return false;
@@ -565,7 +588,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private bool CanJump() {
-        return lastOnGroundTime > 0 && !isJumping;
+        return (lastOnGroundTime > 0 || _extraJumpsLeft > 0) && !isJumping;
     }
 
     private bool CanWallJump() {
