@@ -14,6 +14,7 @@ public class EnemyGroundMovement : MonoBehaviour
 
     private SpriteRenderer sp;
     private bool canMove = true;
+    private float jumpCooldownTime = 0.1f;
 
     private void Start()
     {
@@ -70,6 +71,7 @@ public class EnemyGroundMovement : MonoBehaviour
             other.GetComponent<Rigidbody2D>().velocity = new Vector2(other.GetComponent<Rigidbody2D>().velocity.x, 0);
             other.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, playerBounce));
             other.gameObject.GetComponent<PlayerMovement>().AddExtraJump();
+            other.gameObject.GetComponent<PlayerMovement>().JumpCooldown(jumpCooldownTime);
 
             GetComponent<Animator>().SetTrigger("Hit");
             GetComponent<BoxCollider2D>().enabled = false;

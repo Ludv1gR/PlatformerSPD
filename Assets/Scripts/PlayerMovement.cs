@@ -189,7 +189,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         if(!isDashing) {
-            if(CanJump() && lastPressedJumpTime > 0) {
+            if(CanJump() && lastPressedJumpTime > 0 && !isSliding) {
                 isJumping = true;
                 isWallJumping = false;
                 _isJumpCut = false;
@@ -393,15 +393,15 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void JumpCooldown() {
+    public void JumpCooldown(float time) {
         if(!isJumping) {
-            StartCoroutine(JumpCooldownCoroutine());
+            StartCoroutine(JumpCooldownCoroutine(time));
         }
     }
 
-    private IEnumerator JumpCooldownCoroutine() {
+    private IEnumerator JumpCooldownCoroutine(float time) {
         isJumping = true;
-        yield return new WaitForSeconds(0.35f);
+        yield return new WaitForSeconds(time);
         isJumping = false;
     }
     #endregion
