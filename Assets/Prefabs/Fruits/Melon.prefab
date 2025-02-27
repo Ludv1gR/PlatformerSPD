@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 6064227781403932198}
   - component: {fileID: 4589004758656981950}
   - component: {fileID: 2833928010146247560}
-  - component: {fileID: 8016856820714979299}
+  - component: {fileID: 878585473797062990}
   m_Layer: 0
   m_Name: Melon
-  m_TagString: Fruit_5P
+  m_TagString: DashPickup
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2.71, y: 1.71, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -107,8 +107,8 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!58 &8016856820714979299
-CircleCollider2D:
+--- !u!68 &878585473797062990
+EdgeCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -139,6 +139,17 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.03}
-  serializedVersion: 2
-  m_Radius: 0.32
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: -0.28058878, y: 0.19134425}
+  - {x: 0.28831512, y: 0.18810841}
+  - {x: 0.28925094, y: 0.0012626424}
+  - {x: 0.097773485, y: -0.19175658}
+  - {x: -0.09301223, y: -0.19234118}
+  - {x: -0.2848203, y: -0.004859306}
+  - {x: -0.28323367, y: 0.18879348}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0

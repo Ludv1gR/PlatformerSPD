@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1990596517743691813}
   m_Layer: 0
   m_Name: Orange
-  m_TagString: Fruit_1P
+  m_TagString: JumpPickup
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.7, y: 3.16, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -139,6 +139,6 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.0000006357829, y: 0}
   serializedVersion: 2
-  m_Radius: 0.29
+  m_Radius: 0.22924487

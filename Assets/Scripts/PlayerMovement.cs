@@ -388,7 +388,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void AddExtraJump() {
-        if(_extraJumpsLeft == 0) {
+        if(_extraJumpsLeft < extraJumpAmount) {
             _extraJumpsLeft++;
         }
     }
@@ -446,8 +446,12 @@ public class PlayerMovement : MonoBehaviour
         _dashesLeft = Mathf.Min(dashAmount, _dashesLeft + 1);
     }
 
-    private void InstaRefillDash() {
-        _dashesLeft = Mathf.Min(dashAmount, _dashesLeft + 1);
+    private bool InstaRefillDash() {
+        if(_dashesLeft < dashAmount) {
+            _dashesLeft = dashAmount;
+            return true;
+        }
+        return false;
     }
     #endregion
 
@@ -538,6 +542,26 @@ public class PlayerMovement : MonoBehaviour
         if(other.CompareTag("HealthFruit"))
         {
             RestoreHealth(other.gameObject);
+        }
+        if(other.CompareTag("DashPickup"))
+        {
+            if(_dashesLeft < dashAmount) {
+                InstaRefillDash();
+                Destroy(other.gameObject);
+                audioSource.pitch = Random.Range(0.9f, 1.1f);
+                audioSource.PlayOneShot(pickupSoundFruit, 0.5f);
+                Instantiate(pickupEffect, other.transform.position, Quaternion.identity);
+            }
+        }
+        if(other.CompareTag("JumpPickup"))
+        {
+            if(_extraJumpsLeft < extraJumpAmount) {
+                AddExtraJump();
+                Destroy(other.gameObject);
+                audioSource.pitch = Random.Range(0.9f, 1.1f);
+                audioSource.PlayOneShot(pickupSoundFruit, 0.5f);
+                Instantiate(pickupEffect, other.transform.position, Quaternion.identity);
+            }
         }
     }
     #endregion

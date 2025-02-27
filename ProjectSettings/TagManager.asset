@@ -11,6 +11,8 @@ TagManager:
   - Fruit_1P
   - Fruit_3P
   - Fruit_5P
+  - DashPickup
+  - JumpPickup
   layers:
   - Default
   - TransparentFX
