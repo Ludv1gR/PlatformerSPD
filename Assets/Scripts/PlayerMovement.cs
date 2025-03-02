@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
     //------------[ nya för SpelDesign ]------------//
     // Constants
     [SerializeField] private float normGravityScale = 2.2f; //-9.81f;
-    [SerializeField] private float maxFallSpeed = 50;
+    [SerializeField] private float maxFallSpeed = 30; // 50 förut
     [SerializeField] private float jumpHangTimeThreshold = 0.1f;
     [SerializeField] private float coyoteTime = 0.1f;
     [SerializeField] private float runMaxSpeed = 3.5f;
@@ -80,7 +80,7 @@ public class PlayerMovement : MonoBehaviour
 
     // GravityMultipliers
     private float fastFallGravityMult = 1.4f;
-    private float jumpCutGravityMult = 1.4f;
+    private float jumpCutGravityMult = 1f; // 1.4 förut
     private float jumpHangGravityMult = 0.7f;
     private float fallGravityMult = 1.1f;
 
@@ -346,6 +346,9 @@ public class PlayerMovement : MonoBehaviour
             force -= rb.velocity.y;
         }
 
+        if(rb.velocity.y > 0) {
+            rb.velocity = new Vector2(rb.velocity.x, 0);
+        }
         rb.AddForce(Vector2.up * force, ForceMode2D.Impulse);
 
         audioSource.pitch = Random.Range(0.8f, 1.2f);
@@ -439,7 +442,7 @@ public class PlayerMovement : MonoBehaviour
         isDashing = false;
     }
 
-    private IEnumerator RefillDash(int amount) {
+    private IEnumerator RefillDash() {
         _dashRefilling = true;
         yield return new WaitForSeconds(dashRefillTime);
         _dashRefilling = false;
@@ -474,6 +477,10 @@ public class PlayerMovement : MonoBehaviour
         rb.AddForce(new Vector2(knockbackForce, up));
         audioSource.pitch = Random.Range(0.8f, 1.2f);
         audioSource.PlayOneShot(damageSound, 0.5f);
+    }
+
+    public void SetRespawnpoint(Transform newRespawnPoint) {
+        spawnPosition = newRespawnPoint;
     }
     #endregion
 

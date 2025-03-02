@@ -10,7 +10,7 @@ public class Trampoline : MonoBehaviour
 
     [SerializeField] private AudioClip trampolineSound;
 
-    private float jumpCooldownTime = 0.35f;
+    private float jumpCooldownTime = 0.4f;
 
     private AudioSource audioSource;
 

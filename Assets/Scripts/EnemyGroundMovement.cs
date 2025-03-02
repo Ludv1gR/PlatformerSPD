@@ -14,7 +14,7 @@ public class EnemyGroundMovement : MonoBehaviour
 
     private SpriteRenderer sp;
     private bool canMove = true;
-    private float jumpCooldownTime = 0.1f;
+    private float jumpCooldownTime = 0.15f;
 
     private void Start()
     {
@@ -50,7 +50,7 @@ public class EnemyGroundMovement : MonoBehaviour
         {
             moveSpeed = -moveSpeed;
         }
-        if(other.gameObject.CompareTag("Player"))
+        if(other.gameObject.CompareTag("Player") && canMove)
         {
             other.gameObject.GetComponent<PlayerMovement>().TakeDamage(attackDamage);
             
@@ -75,7 +75,7 @@ public class EnemyGroundMovement : MonoBehaviour
 
             GetComponent<Animator>().SetTrigger("Hit");
             GetComponent<BoxCollider2D>().enabled = false;
-            GetComponent<CapsuleCollider2D>().enabled = false;
+            GetComponent<BoxCollider2D>().enabled = false;
             GetComponent<Rigidbody2D>().gravityScale = 0;
             GetComponent<Rigidbody2D>().velocity = Vector2.zero;
             canMove = false;
