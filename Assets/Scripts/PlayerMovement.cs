@@ -54,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
     private float _wallJumpStartTime = 0f;
     private int _lastWallJumpDir;
     private float wallJumpTime = 0.2f;
-    private Vector2 wallJumpForce = new Vector2(4f, 8f);
+    private Vector2 wallJumpForce = new Vector2(5f, 8f);
 
     // Double Jump
     [SerializeField]private int extraJumpAmount = 1;
@@ -85,13 +85,13 @@ public class PlayerMovement : MonoBehaviour
     private float fallGravityMult = 1.1f;
 
     // Lerps
-    private float wallJumpRunLerp = 0.2f;
+    private float wallJumpRunLerp = 0.4f;
     private float dashEndRunLerp = 0.6f;
 
     // Acceleration
     private float runAccelAmount = 16f;
     private float runDeccelAmount = 10f;
-    private float accelInAir = 0.6f;
+    private float accelInAir = 0.5f;
     private float deccelInAir = 0.4f;
     private float jumpHangAccelerationMult = 1; // vill inte ha speed boost vid apex om inte väldigt lite
     private float jumpHangMaxSpeedMult = 1; // tillhör den övre här
@@ -189,7 +189,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         if(!isDashing) {
-            if(CanJump() && lastPressedJumpTime > 0 && !isSliding) {
+            if(CanJump() && lastPressedJumpTime > 0 && !isSliding && !CanWallJump()) { // KANSKE
                 isJumping = true;
                 isWallJumping = false;
                 _isJumpCut = false;
@@ -667,4 +667,4 @@ public class PlayerMovement : MonoBehaviour
         Gizmos.DrawWireCube(_backWallCheckPoint.position, _wallCheckSize);
     }
 }
-// https://github.com/DawnosaurDev/platformer-movement/tree/main (WALLJUMP SKRIVER RN)
+// https://github.com/DawnosaurDev/platformer-movement/tree/main

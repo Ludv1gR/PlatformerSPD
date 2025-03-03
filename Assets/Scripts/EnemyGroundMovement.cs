@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EnemyGroundMovement : MonoBehaviour
 {
+    [SerializeField] private BoxCollider2D collider;
     [SerializeField] private float moveSpeed = 2.0f;
     [SerializeField] private float playerBounce = 100.0f;
     [SerializeField] private int attackDamage = 1;
@@ -75,7 +76,7 @@ public class EnemyGroundMovement : MonoBehaviour
 
             GetComponent<Animator>().SetTrigger("Hit");
             GetComponent<BoxCollider2D>().enabled = false;
-            GetComponent<BoxCollider2D>().enabled = false;
+            collider.enabled = false;
             GetComponent<Rigidbody2D>().gravityScale = 0;
             GetComponent<Rigidbody2D>().velocity = Vector2.zero;
             canMove = false;
