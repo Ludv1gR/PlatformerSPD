@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 929a302ca4515f14ba41bf682e8f6801, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collider: {fileID: 8341750266189580719}
+  colliderHitbox: {fileID: 8341750266189580719}
   moveSpeed: 2
   playerBounce: 260
   attackDamage: 1

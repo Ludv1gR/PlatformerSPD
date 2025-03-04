@@ -32,6 +32,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float runMaxSpeed = 3.5f;
     [SerializeField] private bool doConserveMomentum = true; // om man behåller fart när man fortsatt vill gå år det hållet
 
+    // Trail Shadow
+    [SerializeField] private GameObject dashTrailPrefab;
+    [SerializeField] private float trailSpawnRate = 0.05f;
+    [SerializeField] private Color trailColor = new Color(0, 0.5f, 1f, 0.5f);
+    private float trailTimer;
+
     // States
     public bool isFacingRight = true;
     public bool isJumping = false;
@@ -259,6 +265,17 @@ public class PlayerMovement : MonoBehaviour
         }
         //______________________________________________
 
+        //____________TRAIL SHADOWN____________
+        if (isDashing) {
+            trailTimer -= Time.deltaTime;
+
+            if (trailTimer <= 0) {
+                SpawnTrail();
+                trailTimer = trailSpawnRate;
+            }
+        }
+        //_____________________________________
+
         anim.SetFloat("MoveSpeed", Mathf.Abs(rb.velocity.x));
         anim.SetFloat("VerticalSpeed", rb.velocity.y);
         anim.SetBool("IsGrounded", CheckIfGrounded());
@@ -481,6 +498,13 @@ public class PlayerMovement : MonoBehaviour
 
     public void SetRespawnpoint(Transform newRespawnPoint) {
         spawnPosition = newRespawnPoint;
+    }
+
+    private void SpawnTrail() {
+        GameObject trail = Instantiate(dashTrailPrefab, transform.position, Quaternion.identity);
+        DashTrail trailScript = trail.GetComponent<DashTrail>();
+
+        trailScript.SetSprite(GetComponent<SpriteRenderer>().sprite, trailColor, transform.position, isFacingRight);
     }
     #endregion
 
