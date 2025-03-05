@@ -5,7 +5,7 @@ public class DashTrail : MonoBehaviour
 {
     private SpriteRenderer sr;
     private Color startColor;
-    [SerializeField] private float fadeDuration = 0.5f;
+    [SerializeField] private float fadeDuration = 0.3f;
 
     private void Awake() {
         sr = GetComponent<SpriteRenderer>();

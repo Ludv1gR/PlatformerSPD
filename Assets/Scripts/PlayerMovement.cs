@@ -10,7 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform spawnPosition;
     [SerializeField] private LayerMask whatIsGround;
     [SerializeField] private AudioClip jumpSound, pickupSoundHealth, pickupSoundFruit, damageSound;
-    [SerializeField] private GameObject pickupEffect, dustParticles;
+    [SerializeField] private GameObject dashPickupEffect, pickupEffect, dustParticles;
 
     [SerializeField] private Slider healthSlider;
     [SerializeField] private TMP_Text fruitsCollectedText;
@@ -546,8 +546,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         } else {
             currentHealth += healthFruit.GetComponent<HealthPickup>().healingAmount;
-            if(currentHealth > startingHealth)
-            {
+            if(currentHealth > startingHealth) {
                 currentHealth = startingHealth;
             }
             audioSource.PlayOneShot(pickupSoundHealth, 0.5f);
@@ -561,8 +560,7 @@ public class PlayerMovement : MonoBehaviour
     #region PICKUP METHODS
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.CompareTag("Fruit_1P"))
-        {
+        if(other.CompareTag("Fruit_1P")) {
             Destroy(other.gameObject);
             fruitsCollected++;
             fruitsCollectedText.text = "" + fruitsCollected;
@@ -570,22 +568,25 @@ public class PlayerMovement : MonoBehaviour
             audioSource.PlayOneShot(pickupSoundFruit, 0.5f);
             Instantiate(pickupEffect, other.transform.position, Quaternion.identity);
         }
-        if(other.CompareTag("HealthFruit"))
-        {
+
+        if(other.CompareTag("HealthFruit")) {
             RestoreHealth(other.gameObject);
         }
-        if(other.CompareTag("DashPickup"))
-        {
+    }
+
+    private void OnTriggerStay2D(Collider2D other) {
+        if(other.CompareTag("DashPickup")) {
             if(_dashesLeft < dashAmount) {
                 InstaRefillDash();
                 Destroy(other.gameObject);
                 audioSource.pitch = Random.Range(0.9f, 1.1f);
                 audioSource.PlayOneShot(pickupSoundFruit, 0.5f);
-                Instantiate(pickupEffect, other.transform.position, Quaternion.identity);
+
+                Instantiate(dashPickupEffect, other.transform.position, Quaternion.identity);
             }
         }
-        if(other.CompareTag("JumpPickup"))
-        {
+
+        if(other.CompareTag("JumpPickup")) {
             if(_extraJumpsLeft < extraJumpAmount) {
                 AddExtraJump();
                 Destroy(other.gameObject);
@@ -596,7 +597,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
     #endregion
-    
+
     #region CHECK METHODS
     private void CheckDirectionToFace(bool isMovingRight) {
         if(isMovingRight != isFacingRight) {
