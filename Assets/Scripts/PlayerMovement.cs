@@ -466,7 +466,7 @@ public class PlayerMovement : MonoBehaviour
         _dashesLeft = Mathf.Min(dashAmount, _dashesLeft + 1);
     }
 
-    private bool InstaRefillDash() {
+    public bool InstaRefillDash() {
         if(_dashesLeft < dashAmount) {
             _dashesLeft = dashAmount;
             return true;

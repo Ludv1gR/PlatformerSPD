@@ -27,6 +27,7 @@ public class Trampoline : MonoBehaviour
             playerRigidbody.AddForce(new Vector2(0, jumpForce));
             other.gameObject.GetComponent<PlayerMovement>().JumpCooldown(jumpCooldownTime);
             other.gameObject.GetComponent<PlayerMovement>().AddExtraJump();
+            other.gameObject.GetComponent<PlayerMovement>().InstaRefillDash();
             GetComponent<Animator>().SetTrigger("Jump");
             audioSource.PlayOneShot(trampolineSound, 0.5f);
         }
