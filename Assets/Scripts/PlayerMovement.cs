@@ -195,7 +195,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         if(!isDashing) {
-            if(CanJump() && lastPressedJumpTime > 0 && !isSliding && !CanWallJump()) { // KANSKE
+            if(CanJump() && lastPressedJumpTime > 0 && !isSliding && !CanWallJump()) {
                 isJumping = true;
                 isWallJumping = false;
                 _isJumpCut = false;
