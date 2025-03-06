@@ -9,12 +9,12 @@ public class DashTrail : MonoBehaviour
 
     private void Awake() {
         sr = GetComponent<SpriteRenderer>();
-        startColor = sr.color;
     }
 
     public void SetSprite(Sprite sprite, Color color, Vector3 position, bool facingRight)
     {
         sr.sprite = sprite;
+        startColor = color;
         sr.color = color;
         transform.position = position;
 

@@ -10,7 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform spawnPosition;
     [SerializeField] private LayerMask whatIsGround;
     [SerializeField] private AudioClip jumpSound, pickupSoundHealth, pickupSoundFruit, damageSound;
-    [SerializeField] private GameObject dashPickupEffect, pickupEffect, dustParticles;
+    [SerializeField] private GameObject jumpPickupEffect, dashPickupEffect, pickupEffect, dustParticles;
 
     [SerializeField] private Slider healthSlider;
     [SerializeField] private TMP_Text fruitsCollectedText;
@@ -35,7 +35,8 @@ public class PlayerMovement : MonoBehaviour
     // Trail Shadow
     [SerializeField] private GameObject dashTrailPrefab;
     [SerializeField] private float trailSpawnRate = 0.05f;
-    [SerializeField] private Color trailColor = new Color(0, 0.5f, 1f, 0.5f);
+    [SerializeField] private Color trailColorDash = new Color(0, 0.5f, 1f, 0.5f);
+    [SerializeField] private Color trailColorJump = new Color(0, 0.5f, 1f, 0.5f);
     private float trailTimer;
 
     // States
@@ -270,7 +271,18 @@ public class PlayerMovement : MonoBehaviour
             trailTimer -= Time.deltaTime;
 
             if (trailTimer <= 0) {
-                SpawnTrail();
+                SpawnTrailDash();
+                trailTimer = trailSpawnRate;
+            }
+        }
+
+        if (!isDashing && isJumping && !CheckIfGrounded() && lastOnGroundTime <= 0 && _extraJumpsLeft < extraJumpAmount)
+        {
+            trailTimer -= Time.deltaTime;
+
+            if (trailTimer <= 0)
+            {
+                SpawnTrailJump();
                 trailTimer = trailSpawnRate;
             }
         }
@@ -500,11 +512,19 @@ public class PlayerMovement : MonoBehaviour
         spawnPosition = newRespawnPoint;
     }
 
-    private void SpawnTrail() {
+    private void SpawnTrailDash() {
         GameObject trail = Instantiate(dashTrailPrefab, transform.position, Quaternion.identity);
         DashTrail trailScript = trail.GetComponent<DashTrail>();
 
-        trailScript.SetSprite(GetComponent<SpriteRenderer>().sprite, trailColor, transform.position, isFacingRight);
+        trailScript.SetSprite(GetComponent<SpriteRenderer>().sprite, trailColorDash, transform.position, isFacingRight);
+    }
+
+    private void SpawnTrailJump()
+    {
+        GameObject trail = Instantiate(dashTrailPrefab, transform.position, Quaternion.identity);
+        DashTrail trailScript = trail.GetComponent<DashTrail>();
+
+        trailScript.SetSprite(GetComponent<SpriteRenderer>().sprite, trailColorJump, transform.position, isFacingRight);
     }
     #endregion
 
@@ -592,7 +612,7 @@ public class PlayerMovement : MonoBehaviour
                 Destroy(other.gameObject);
                 audioSource.pitch = Random.Range(0.9f, 1.1f);
                 audioSource.PlayOneShot(pickupSoundFruit, 0.5f);
-                Instantiate(pickupEffect, other.transform.position, Quaternion.identity);
+                Instantiate(jumpPickupEffect, other.transform.position, Quaternion.identity);
             }
         }
     }
