@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4589004758656981950}
   - component: {fileID: 2833928010146247560}
   - component: {fileID: 878585473797062990}
+  - component: {fileID: 1497400877347980085}
   m_Layer: 0
   m_Name: Melon
   m_TagString: DashPickup
@@ -153,3 +154,17 @@ EdgeCollider2D:
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
+--- !u!114 &1497400877347980085
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1159281036917597260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c47d06f212371f9479ded57f153fffae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  respawnTime: 3
+  respawnEffect: {fileID: 8852030287053589822, guid: 52ae49a030c54e644afa8250b893734d, type: 3}

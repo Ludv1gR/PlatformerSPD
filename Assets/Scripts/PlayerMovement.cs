@@ -14,7 +14,7 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private Slider healthSlider;
     [SerializeField] private TMP_Text fruitsCollectedText;
-    [SerializeField] private TMP_Text respawnsText;
+    //[SerializeField] private TMP_Text respawnsText;
 
     private float rayDistance = 0.15f;
     private int startingHealth = 5;
@@ -128,7 +128,7 @@ public class PlayerMovement : MonoBehaviour
     {
         currentHealth = startingHealth;
         fruitsCollectedText.text = "" + fruitsCollected;
-        respawnsText.text = "x " + respawns;
+        //respawnsText.text = "x " + respawns;
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
@@ -535,9 +535,9 @@ public class PlayerMovement : MonoBehaviour
         UpdateHealthBar();
 
         if(currentHealth <= 0) {
-            if(respawns <= 0) {
-                gameOverScreen.GameOver();
-            }
+            /*if(respawns <= 0) {
+                gameOverScreen.GameOver();  // TAGIT BORT RESPAWN LIMIT
+            }*/
             Respawn();
         }
     }
@@ -547,14 +547,14 @@ public class PlayerMovement : MonoBehaviour
         UpdateHealthBar();
         transform.position = spawnPosition.position;
         rb.velocity = Vector2.zero;
-        respawns--;
+        /*respawns--;
         if(respawns > 0) {
             respawnsText.fontSize = 50;
             respawnsText.text = "x " + respawns;
         } else {
             respawnsText.fontSize = 36;
             respawnsText.text = "Last";
-        }
+        }*/
     }
 
     private void UpdateHealthBar() {
@@ -598,7 +598,12 @@ public class PlayerMovement : MonoBehaviour
         if(other.CompareTag("DashPickup")) {
             if(_dashesLeft < dashAmount) {
                 InstaRefillDash();
-                Destroy(other.gameObject);
+
+                PickupRespawn pickupRespawn = other.GetComponent<PickupRespawn>();
+                if (pickupRespawn != null) {
+                    pickupRespawn.Collect();
+                }
+
                 audioSource.pitch = Random.Range(0.9f, 1.1f);
                 audioSource.PlayOneShot(pickupSoundFruit, 0.5f);
 
@@ -609,7 +614,12 @@ public class PlayerMovement : MonoBehaviour
         if(other.CompareTag("JumpPickup")) {
             if(_extraJumpsLeft < extraJumpAmount) {
                 AddExtraJump();
-                Destroy(other.gameObject);
+
+                PickupRespawn pickupRespawn = other.GetComponent<PickupRespawn>();
+                if (pickupRespawn != null) {
+                    pickupRespawn.Collect();
+                }
+
                 audioSource.pitch = Random.Range(0.9f, 1.1f);
                 audioSource.PlayOneShot(pickupSoundFruit, 0.5f);
                 Instantiate(jumpPickupEffect, other.transform.position, Quaternion.identity);
