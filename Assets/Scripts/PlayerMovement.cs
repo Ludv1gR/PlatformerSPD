@@ -9,7 +9,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform leftFoot, rightFoot;
     [SerializeField] private Transform spawnPosition;
     [SerializeField] private LayerMask whatIsGround;
-    [SerializeField] private AudioClip jumpSound, pickupSoundHealth, pickupSoundFruit, damageSound;
+    [SerializeField] private AudioClip jumpSound, doubleJumpSound, pickupSoundHealth, pickupSoundFruit, damageSound;
+    [SerializeField] private AudioClip dashSound, dashPickupSound, jumpPickupSound;
     [SerializeField] private GameObject jumpPickupEffect, dashPickupEffect, pickupEffect, dustParticles;
 
     [SerializeField] private Slider healthSlider;
@@ -380,9 +381,6 @@ public class PlayerMovement : MonoBehaviour
         }
         rb.AddForce(Vector2.up * force, ForceMode2D.Impulse);
 
-        audioSource.pitch = Random.Range(0.8f, 1.2f);
-        audioSource.PlayOneShot(jumpSound, 0.3f);
-
         if(lastOnGroundTime > -coyoteTime && lastOnGroundTime < 0 && CheckIfGrounded()){
             // dont produce particles when jumping during coyote time (måste göra coyote time check innan CheckIfGrounded())
         } else if(CheckIfGrounded()) {
@@ -392,9 +390,13 @@ public class PlayerMovement : MonoBehaviour
         if (lastOnGroundTime > 0) {
             lastOnGroundTime = 0; // Reset ground time on normal jump
             _extraJumpsLeft = extraJumpAmount;
+            audioSource.pitch = Random.Range(0.8f, 1.2f);
+            audioSource.PlayOneShot(jumpSound, 0.3f);
         } else {
             _extraJumpsLeft--; // Consume an extra jump
             if(_extraJumpsLeft < extraJumpAmount) {
+                audioSource.pitch = Random.Range(0.8f, 1.2f);
+                audioSource.PlayOneShot(doubleJumpSound, 0.3f);
                 anim.SetTrigger("DoubleJump");
             }
         }
@@ -447,6 +449,8 @@ public class PlayerMovement : MonoBehaviour
 
         _dashesLeft--;
         _isDashAttacking = true;
+        audioSource.pitch = Random.Range(0.8f, 1.2f);
+        audioSource.PlayOneShot(dashSound, 0.3f);
 
         rb.gravityScale = 0;
 
@@ -605,7 +609,7 @@ public class PlayerMovement : MonoBehaviour
                 }
 
                 audioSource.pitch = Random.Range(0.9f, 1.1f);
-                audioSource.PlayOneShot(pickupSoundFruit, 0.5f);
+                audioSource.PlayOneShot(dashPickupSound, 0.5f);
 
                 Instantiate(dashPickupEffect, other.transform.position, Quaternion.identity);
             }
@@ -621,7 +625,7 @@ public class PlayerMovement : MonoBehaviour
                 }
 
                 audioSource.pitch = Random.Range(0.9f, 1.1f);
-                audioSource.PlayOneShot(pickupSoundFruit, 0.5f);
+                audioSource.PlayOneShot(jumpPickupSound, 0.5f);
                 Instantiate(jumpPickupEffect, other.transform.position, Quaternion.identity);
             }
         }
