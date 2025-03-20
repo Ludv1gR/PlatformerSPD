@@ -7739,7 +7739,7 @@ MonoBehaviour:
   whatIsGround:
     serializedVersion: 2
     m_Bits: 576
-  jumpSound: {fileID: 8300000, guid: 59bbc2107a268384f9332cce85bad0a1, type: 3}
+  jumpSound: {fileID: 8300000, guid: 6c529403a42d2ef469bb45870b3c6e0b, type: 3}
   doubleJumpSound: {fileID: 8300000, guid: 7d05529d5c1536541b53dd974a1f5702, type: 3}
   pickupSoundHealth: {fileID: 8300000, guid: 32e17f5a6f92aee4ab487022485fcb67, type: 3}
   pickupSoundFruit: {fileID: 8300000, guid: 37f6a8f1238daea479217854ca82d1b7, type: 3}
@@ -162437,7 +162437,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -782324195
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}

@@ -20,7 +20,7 @@ public class PlayerMovement : MonoBehaviour
     private float rayDistance = 0.15f;
     private int startingHealth = 5;
     private int currentHealth = 0;
-    private int respawns = 3;
+    //private int respawns = 3;
     public int fruitsCollected = 0;
 
 
