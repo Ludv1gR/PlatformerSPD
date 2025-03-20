@@ -7740,16 +7740,19 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 576
   jumpSound: {fileID: 8300000, guid: 59bbc2107a268384f9332cce85bad0a1, type: 3}
+  doubleJumpSound: {fileID: 8300000, guid: 7d05529d5c1536541b53dd974a1f5702, type: 3}
   pickupSoundHealth: {fileID: 8300000, guid: 32e17f5a6f92aee4ab487022485fcb67, type: 3}
   pickupSoundFruit: {fileID: 8300000, guid: 37f6a8f1238daea479217854ca82d1b7, type: 3}
   damageSound: {fileID: 8300000, guid: fd5482076a0c6a2469d38c104827199e, type: 3}
+  dashSound: {fileID: 8300000, guid: 9b8a43cc72180d64ba4b0dfad6326899, type: 3}
+  dashPickupSound: {fileID: 8300000, guid: fa34b18c72387e648a8adf0509211e12, type: 3}
+  jumpPickupSound: {fileID: 8300000, guid: fa34b18c72387e648a8adf0509211e12, type: 3}
   jumpPickupEffect: {fileID: 6434835506436545974, guid: f665265c6d1bacb41bd3f6a8fc193a30, type: 3}
   dashPickupEffect: {fileID: 8852030287053589822, guid: 52ae49a030c54e644afa8250b893734d, type: 3}
   pickupEffect: {fileID: 7307572188780852158, guid: 1625ed2cfe7afdf489ae90963b07bbf8, type: 3}
   dustParticles: {fileID: 4098905292112806296, guid: 00b085b9bf3fd67479d2f02d4147ada4, type: 3}
   healthSlider: {fileID: 1464863859}
   fruitsCollectedText: {fileID: 1350455349}
-  respawnsText: {fileID: 1994252141}
   fruitsCollected: 0
   normGravityScale: 2.2
   maxFallSpeed: 30
